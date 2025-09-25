@@ -13,13 +13,11 @@
       background: black;
       overflow: hidden;
     }
-
     .slideshow-container {
       position: relative;
       width: 100%;
       height: 100%;
     }
-
     .slide {
       position: absolute;
       top: 0;
@@ -29,45 +27,64 @@
       opacity: 0;
       transition: opacity 1s ease-in-out;
     }
-
     .slide img {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* endre til 'cover' hvis du vil fylle hele skjermen */
+      object-fit: cover;
     }
-
     .active {
       opacity: 1;
     }
   </style>
 </head>
 <body>
-  <div class="slideshow-container">
-    <div class="slide active">
-      <img src="https://umoeindustries-my.sharepoint.com/:i:/p/pap/ETmGl0klQYJNuo0mQonJAZUB7vWd9kgn39BZa83GkbxWUw?e=6x8X3m&download=1">
-    </div>
-    <div class="slide">
-      <img src="https://umoeindustries-my.sharepoint.com/:i:/p/pap/EVq2Y4Lkv5hOikr5Z2Bt0DkBMF4VSHa7MBcGmREjGY__Qg?e=vVLrbK&download=1">
-    </div>
-    <div class="slide">
-      <img src="https://umoeindustries-my.sharepoint.com/:i:/p/pap/ERQDuREiWjBOmjoag9D0JNwBDYLCgmriml94mUom_nX6Sg?e=kznbMO&download=1">
-    </div>
-     <div class="slide">
-      <img src="https://umoeindustries-my.sharepoint.com/:i:/p/pap/EVgWAvoEfkRGjT32PQIp94QBcMt5De_HPK4u4oU7x5-nsQ?e=FWfBKG&download=1">
-    </div>
-     <div class="slide">
-      <img src="https://umoeindustries-my.sharepoint.com/:i:/p/pap/EbR2e8bdiL1Mls5bKUu0owsBjFZnsOPISJzVX5lY9ZBBKQ?e=N03L6n&download=1">
-    </div>
-  </div>
+  <div class="slideshow-container" id="slideshow"></div>
 
   <script>
-    let slides = document.querySelectorAll(".slide");
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDN7ywYCTW2vEUzI7X8aP8rwsXJz7tx_5mq62ao1bnqq3RkXHiucP1HlOtbwKba6AX7s8Br73Yipmw/pub?output=csv"; // legg inn Google Sheets CSV-lenken her
+    let slides = [];
     let index = 0;
-    setInterval(() => {
+    let interval;
+
+    async function fetchImages() {
+      try {
+        const response = await fetch(sheetUrl + "&cacheBust=" + Date.now());
+        const text = await response.text();
+        const urls = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+
+        const container = document.getElementById("slideshow");
+        container.innerHTML = ""; // reset
+
+        urls.forEach((url, i) => {
+          const div = document.createElement("div");
+          div.className = "slide" + (i === 0 ? " active" : "");
+          const img = document.createElement("img");
+          img.src = url;
+          div.appendChild(img);
+          container.appendChild(div);
+        });
+
+        slides = document.querySelectorAll(".slide");
+        index = 0;
+
+        if (interval) clearInterval(interval);
+        interval = setInterval(nextSlide, 8000); // bytter bilde hvert 8 sek
+      } catch (err) {
+        console.error("Kunne ikke hente bilder:", err);
+      }
+    }
+
+    function nextSlide() {
+      if (slides.length === 0) return;
       slides[index].classList.remove("active");
       index = (index + 1) % slides.length;
       slides[index].classList.add("active");
-    }, 9000); // bytter bilde hvert 5 sekund
+    }
+
+    // Hent bilder første gang
+    fetchImages();
+    // Oppdater bilde-listen hvert 5. minutt
+    setInterval(fetchImages, 5 * 60 * 1000);
   </script>
 </body>
 </html>
