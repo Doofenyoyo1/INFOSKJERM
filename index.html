@@ -30,7 +30,8 @@
     .slide img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: contain;   /* endre til cover hvis du vil fylle hele skjermen */
+      background-color: black;
     }
     .active {
       opacity: 1;
@@ -41,7 +42,7 @@
   <div class="slideshow-container" id="slideshow"></div>
 
   <script>
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDN7ywYCTW2vEUzI7X8aP8rwsXJz7tx_5mq62ao1bnqq3RkXHiucP1HlOtbwKba6AX7s8Br73Yipmw/pub?output=csv"; // legg inn Google Sheets CSV-lenken her
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDN7ywYCTW2vEUzI7X8aP8rwsXJz7tx_5mq62ao1bnqq3RkXHiucP1HlOtbwKba6AX7s8Br73Yipmw/pub?output=csv"; 
     let slides = [];
     let index = 0;
     let interval;
@@ -50,16 +51,27 @@
       try {
         const response = await fetch(sheetUrl + "&cacheBust=" + Date.now());
         const text = await response.text();
-        const urls = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+        const urls = text.split("\n")
+          .map(line => line.trim())
+          .filter(line => line.length > 0 && line.startsWith("http"));
 
         const container = document.getElementById("slideshow");
         container.innerHTML = ""; // reset
 
         urls.forEach((url, i) => {
           const div = document.createElement("div");
-          div.className = "slide" + (i === 0 ? " active" : "");
+          div.className = "slide";
+
           const img = document.createElement("img");
           img.src = url;
+
+          // Aktiver første slide bare når bildet er lastet inn
+          img.onload = () => {
+            if (i === 0) {
+              div.classList.add("active");
+            }
+          };
+
           div.appendChild(img);
           container.appendChild(div);
         });
@@ -83,7 +95,7 @@
 
     // Hent bilder første gang
     fetchImages();
-    // Oppdater bilde-listen hvert 5. minutt
+    // Oppdater bilde-listen hvert 1. minutt
     setInterval(fetchImages, 60 * 1000);
   </script>
 </body>
