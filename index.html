@@ -13,26 +13,32 @@
       background: black;
       overflow: hidden;
     }
+
     .slideshow-container {
       position: relative;
       width: 100%;
       height: 100%;
     }
+
     .slide {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       opacity: 0;
       transition: opacity 1s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;   /* endre til cover hvis du vil fylle hele skjermen */
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;  /* bruk 'cover' hvis du vil fylle hele skjermen */
       background-color: black;
     }
+
     .active {
       opacity: 1;
     }
@@ -56,7 +62,7 @@
           .filter(line => line.length > 0 && line.startsWith("http"));
 
         const container = document.getElementById("slideshow");
-        container.innerHTML = ""; // reset
+        container.innerHTML = "";
 
         urls.forEach((url, i) => {
           const div = document.createElement("div");
@@ -65,11 +71,8 @@
           const img = document.createElement("img");
           img.src = url;
 
-          // Aktiver første slide bare når bildet er lastet inn
           img.onload = () => {
-            if (i === 0) {
-              div.classList.add("active");
-            }
+            if (i === 0) div.classList.add("active");
           };
 
           div.appendChild(img);
@@ -80,7 +83,7 @@
         index = 0;
 
         if (interval) clearInterval(interval);
-        interval = setInterval(nextSlide, 8000); // bytter bilde hvert 8 sek
+        interval = setInterval(nextSlide, 8000); // bytt bilde hvert 8 sek
       } catch (err) {
         console.error("Kunne ikke hente bilder:", err);
       }
