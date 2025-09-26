@@ -13,11 +13,11 @@
       background: black;
       overflow: hidden;
       display: flex;
-      flex-direction: column; /* Gjør at footer alltid legger seg nederst */
+      flex-direction: column; /* Slideshow over, footer nederst */
     }
 
     .slideshow-container {
-      flex: 1; /* Tar opp all tilgjengelig plass over footer */
+      flex: 1; /* Tar all plass som er igjen over footer */
       position: relative;
       width: 100%;
       background: black;
@@ -36,8 +36,6 @@
     .slide img {
       max-width: 100%;
       max-height: 100%;
-      width: auto;
-      height: auto;
       object-fit: contain;
       background-color: black;
     }
@@ -52,7 +50,7 @@
       color: white;
       font-size: 24px;
       text-align: center;
-      padding: 8px 0;
+      padding: 10px 0;
       font-family: Arial, sans-serif;
     }
   </style>
@@ -97,37 +95,4 @@
         slides = document.querySelectorAll(".slide");
         index = 0;
 
-        if (interval) clearInterval(interval);
-        interval = setInterval(nextSlide, 8000); // bytt bilde hvert 8 sek
-      } catch (err) {
-        console.error("Kunne ikke hente bilder:", err);
-      }
-    }
-
-    function nextSlide() {
-      if (slides.length === 0) return;
-      slides[index].classList.remove("active");
-      index = (index + 1) % slides.length;
-      slides[index].classList.add("active");
-    }
-
-    // Oppdater klokke og tekst i footer
-    function updateFooter() {
-      const footer = document.getElementById("footer");
-      const now = new Date();
-      const dato = now.toLocaleDateString("no-NO", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-      const tid = now.toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-      footer.textContent = `${dato} ${tid} | Avdeling Hydro`;
-    }
-
-    // Hent bilder første gang
-    fetchImages();
-    // Oppdater bilde-listen hvert 5. minutt
-    setInterval(fetchImages, 5 * 60 * 1000);
-
-    // Oppdater footer hvert sekund
-    updateFooter();
-    setInterval(updateFooter, 1000);
-  </script>
-</body>
-</html>
+        if (interval) clear
