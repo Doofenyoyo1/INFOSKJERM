@@ -28,6 +28,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background: black; /* fallback bakgrunn */
     }
 
     .slide img {
@@ -35,8 +36,7 @@
       max-height: 100%;
       width: auto;
       height: auto;
-      object-fit: contain;  /* bruk 'cover' hvis du vil fylle hele skjermen */
-      background-color: black;
+      object-fit: contain;  /* bytt til 'cover' hvis du vil fylle skjermen */
     }
 
     .active {
@@ -49,9 +49,11 @@
 
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDN7ywYCTW2vEUzI7X8aP8rwsXJz7tx_5mq62ao1bnqq3RkXHiucP1HlOtbwKba6AX7s8Br73Yipmw/pub?output=csv"; 
+    
     let slides = [];
     let index = 0;
     let interval;
+    const slideDuration = 8000; // millisekunder per slide
 
     async function fetchImages() {
       try {
@@ -70,9 +72,11 @@
 
           const img = document.createElement("img");
           img.src = url;
+          img.loading = "lazy"; // last inn senere hvis mulig
 
-          img.onload = () => {
-            if (i === 0) div.classList.add("active");
+          img.onerror = () => {
+            console.warn("Kunne ikke laste:", url);
+            div.remove();
           };
 
           div.appendChild(img);
@@ -80,10 +84,17 @@
         });
 
         slides = document.querySelectorAll(".slide");
-        index = 0;
 
+        // behold samme slide hvis mulig
+        if (slides.length > 0) {
+          index = index % slides.length;
+          slides[index].classList.add("active");
+        }
+
+        // restart intervallet
         if (interval) clearInterval(interval);
-        interval = setInterval(nextSlide, 8000); // bytt bilde hvert 8 sek
+        interval = setInterval(nextSlide, slideDuration);
+
       } catch (err) {
         console.error("Kunne ikke hente bilder:", err);
       }
@@ -96,7 +107,7 @@
       slides[index].classList.add("active");
     }
 
-    // Hent bilder første gang
+    // start opp
     fetchImages();
     // Oppdater bilde-listen hvert 5. minutt
     setInterval(fetchImages, 5 * 60 * 1000);
