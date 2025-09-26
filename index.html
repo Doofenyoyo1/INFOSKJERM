@@ -12,12 +12,15 @@
       width: 100%;
       background: black;
       overflow: hidden;
+      display: flex;
+      flex-direction: column; /* Gjør at footer alltid legger seg nederst */
     }
 
     .slideshow-container {
+      flex: 1; /* Tar opp all tilgjengelig plass over footer */
       position: relative;
       width: 100%;
-      height: 100%;
+      background: black;
     }
 
     .slide {
@@ -35,17 +38,29 @@
       max-height: 100%;
       width: auto;
       height: auto;
-      object-fit: contain;  /* bruk 'cover' hvis du vil fylle hele skjermen */
+      object-fit: contain;
       background-color: black;
     }
 
     .active {
       opacity: 1;
     }
+
+    /* Bunnlinje */
+    .footer {
+      background: green;
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      padding: 8px 0;
+      font-family: Arial, sans-serif;
+    }
   </style>
 </head>
 <body>
   <div class="slideshow-container" id="slideshow"></div>
+
+  <div class="footer" id="footer"></div>
 
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDN7ywYCTW2vEUzI7X8aP8rwsXJz7tx_5mq62ao1bnqq3RkXHiucP1HlOtbwKba6AX7s8Br73Yipmw/pub?output=csv"; 
@@ -96,10 +111,23 @@
       slides[index].classList.add("active");
     }
 
+    // Oppdater klokke og tekst i footer
+    function updateFooter() {
+      const footer = document.getElementById("footer");
+      const now = new Date();
+      const dato = now.toLocaleDateString("no-NO", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+      const tid = now.toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      footer.textContent = `${dato} ${tid} | Avdeling Hydro`;
+    }
+
     // Hent bilder første gang
     fetchImages();
     // Oppdater bilde-listen hvert 5. minutt
     setInterval(fetchImages, 5 * 60 * 1000);
+
+    // Oppdater footer hvert sekund
+    updateFooter();
+    setInterval(updateFooter, 1000);
   </script>
 </body>
 </html>
